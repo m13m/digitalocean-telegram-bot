@@ -14,7 +14,7 @@ import logging
 import digitalocean
 
 manager = digitalocean.Manager(token="7630e27e3bec4147242f0707a86061e8e22e780cfd7ac69e5f1ec256e340fe90")
-
+d_token = "7630e27e3bec4147242f0707a86061e8e22e780cfd7ac69e5f1ec256e340fe90"
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -28,18 +28,20 @@ logger = logging.getLogger(__name__)
 def start(bot, update):
     bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
     sleep(0.2)
-    bot.sendMessage(chat_id=update.message.chat_id,text='''Hi! I am DigitalOcean bot. Use /help to get /help''')
+    bot.sendMessage(chat_id=update.message.chat_id,text='''DigitalOcean is a simple and robust cloud computing platform, designed for developers. Use /help to get /help''')
 
 
-def create(bot, update):
+def create(bot, update ):
     bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
     sleep(0.2)
-    bot.sendMessage(chat_id=update.message.chat_id, text=''' ''')
+    bot.sendMessage(chat_id=update.message.chat_id, text='''Wait for a 1 minute while we create your droplet.''')
+    create_instance()
+
+def account(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
+    bot.sendMessage(chat_id=update.message.chat_id, text=get_account(manager))
 
 
-
-def stats(bot, update):
-    update.message.reply_text('Help!')
 
 def images(bot, update):
     bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
@@ -54,13 +56,33 @@ def error(bot, update, error):
     logger.warn('Update "%s" caused error "%s"' % (update, error))
 
 def help(bot, update):
-    update.message.reply_text("Stoics : List of commands\n 1. /create : Create a Digital Ocean droplet instance. \n 2. /stats : Check the stats of Your Droplet. ")
+	bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
+	sleep(0.2)
+	bot.sendMessage(chat_id=update.message.chat_id, text='''
+Use one of the following commands
+/create - to create an instance of digital ocean droplet.
+/images - to get list of aviviable images.
+/account - to get the current user account information.
+/logs - to get the logs of the instance.
+''')
 
 
-def create_instance(manager, name, size, stack, region):
+def create_instance(d_name='Example', d_size='512mb', d_image='ubuntu-14-04-x64', d_region='nyc2', d_backups=True):
+    droplet = digitalocean.Droplet(token=d_token,
+                               name=d_name,
+                               region=d_region, # New York 2
+                               image=d_image, # Ubuntu 14.04 x64
+                               size_slug=d_size,  # 512MB
+                               backups=d_backups)
+    droplet.create()
     
+def  get_account(manager):
+    email = manager.get_account()   
+    email = "Your registerd account E-Mail:\n" + str(email)
+    return email
 
-    
+def check_logs():
+    pass    
 
 def show_images(manager):
     images_str = ''
@@ -74,7 +96,7 @@ def show_images(manager):
         
 
 def main():
-    print("Stoics Bot running...")
+    print("Digital Ocean Bot running...")
     # Create the EventHandler and pass it your bot's token.
     updater = Updater("357335508:AAHGHM6jVx35nm92h4r0LTxoDaB1c8Q8KMM")
 
@@ -82,7 +104,8 @@ def main():
     dp = updater.dispatcher
 
     # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("stats", stats))
+    dp.add_handler(CommandHandler("create", create))
+    dp.add_handler(CommandHandler("account", account))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("images", images))
     dp.add_handler(CommandHandler("start", start))
