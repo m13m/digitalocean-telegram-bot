@@ -13,8 +13,8 @@ import logging
 #Digital Ocean
 import digitalocean
 
-manager = digitalocean.Manager(token="7630e27e3bec4147242f0707a86061e8e22e780cfd7ac69e5f1ec256e340fe90")
-d_token = "7630e27e3bec4147242f0707a86061e8e22e780cfd7ac69e5f1ec256e340fe90"
+manager = digitalocean.Manager(token="")
+d_token = ""
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
