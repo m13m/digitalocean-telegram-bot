@@ -98,7 +98,7 @@ def show_images(manager):
 def main():
     print("Digital Ocean Bot running...")
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater("357335508:AAHGHM6jVx35nm92h4r0LTxoDaB1c8Q8KMM")
+    updater = Updater("")
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
